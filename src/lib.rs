@@ -9,6 +9,28 @@ use alloc::string::{String, ToString};
 #[cfg(feature = "std")]
 use std::io::{BufReader, Read};
 
+enum HashAlgorithm {
+    SHA1,
+    SHA2
+}
+
+struct GitOid {
+    hash_algorithm: HashAlgorithm,
+}
+
+impl GitOid {
+    pub fn generate_sha1_git_oid(&self, x: &[u8]) -> String {
+        let prefix = format!("blob {}\0", x.len());
+        let mut hasher = sha1_smol::Sha1::new();
+
+        hasher.update(prefix.as_bytes());
+        hasher.update(x);
+
+        hasher.digest().to_string()
+    }
+}
+
+/*
 pub fn generate_sha1_git_oid(x: &[u8]) -> String {
     let prefix = format!("blob {}\0", x.len());
     let mut hasher = sha1_smol::Sha1::new();
@@ -18,6 +40,7 @@ pub fn generate_sha1_git_oid(x: &[u8]) -> String {
 
     hasher.digest().to_string()
 }
+*/
 
 #[cfg(feature = "std")]
 pub fn generate_sha1_git_oid_from_buffer<R>(
@@ -60,7 +83,7 @@ mod tests {
     #[cfg(feature = "std")]
     use std::io::BufReader;
 
-    use crate::generate_sha1_git_oid;
+    use super::*;
     #[cfg(feature = "std")]
     use crate::generate_sha1_git_oid_from_buffer;
 
@@ -74,7 +97,11 @@ mod tests {
     fn test_generate_sha1_git_oid() {
         let input = "hello world".as_bytes();
 
-        let result = generate_sha1_git_oid(input);
+        let new_gitoid = GitOid {
+            hash_algorithm: HashAlgorithm::SHA1
+        };
+
+        let result = new_gitoid.generate_sha1_git_oid(input);
         assert_eq!(result, "95d09f2b10159347eece71399a7e2e907ea3df4f")
     }
 

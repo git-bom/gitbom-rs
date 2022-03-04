@@ -1,4 +1,6 @@
 use std::io::{BufReader, Read};
+use sha1::digest::core_api::{ CoreWrapper };
+use sha1::Sha1Core;
 use sha2::{Sha256, Digest};
 
 enum HashAlgorithm {
@@ -18,11 +20,7 @@ impl GitOid {
             HashAlgorithm::SHA1 => {
                 let mut hasher = sha1::Sha1::new();
 
-                hasher.update(prefix.as_bytes());
-                hasher.update(content);
-
-                let hash = hasher.finalize();
-                hex::encode(hash)
+                GitOid::update_hasher(hasher, content, prefix)
             },
             HashAlgorithm::SHA256 => {
                 let mut hasher = Sha256::new();
@@ -35,6 +33,14 @@ impl GitOid {
                 hex::encode(hash)
             }
         }
+    }
+
+    fn update_hasher(mut hasher: CoreWrapper<Sha1Core>, content: &[u8], prefix: String) -> String {
+        hasher.update(prefix.as_bytes());
+        hasher.update(content);
+
+        let hash = hasher.finalize();
+        hex::encode(hash)
     }
 
     pub fn generate_git_oid_from_buffer<R>(

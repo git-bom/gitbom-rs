@@ -14,15 +14,15 @@ struct GitOid {
 
 impl GitOid {
     pub fn generate_git_oid(&self, content: &[u8]) -> String {
-        let prefix = format!("blob {}\0", content.len());
 
         return match self.hash_algorithm {
             HashAlgorithm::SHA1 => {
                 let mut hasher = sha1::Sha1::new();
 
-                GitOid::update_hasher(hasher, content, prefix)
+                GitOid::update_hasher(hasher, content)
             },
             HashAlgorithm::SHA256 => {
+                let prefix = format!("blob {}\0", content.len());
                 let mut hasher = Sha256::new();
 
                 hasher.update(prefix.as_bytes());
@@ -35,7 +35,9 @@ impl GitOid {
         }
     }
 
-    fn update_hasher(mut hasher: CoreWrapper<Sha1Core>, content: &[u8], prefix: String) -> String {
+    fn update_hasher(mut hasher: CoreWrapper<Sha1Core>, content: &[u8]) -> String {
+        let prefix = format!("blob {}\0", content.len());
+
         hasher.update(prefix.as_bytes());
         hasher.update(content);
 

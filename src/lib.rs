@@ -2,13 +2,13 @@ use std::io::{BufReader, Read};
 use sha2::{Sha256, Digest};
 
 #[derive(Debug)]
-enum HashAlgorithm {
+pub enum HashAlgorithm {
     SHA1,
     SHA256
 }
 
 #[derive(Debug)]
-struct GitOid {
+pub struct GitOid {
     hash_algorithm: HashAlgorithm,
 }
 
@@ -107,19 +107,19 @@ impl GitOid {
 }
 
 #[derive(Debug)]
-struct GitBom {
-    gitOids: Vec<String>
+pub struct GitBom {
+    git_oids: Vec<String>
 }
 
 impl GitBom {
     pub fn new() -> Self {
         Self {
-            gitOids: Vec::new()
+            git_oids: Vec::new()
         }
     }
 
     pub fn add(&mut self, gitoid: String) {
-      self.gitOids.push(gitoid) 
+      self.git_oids.push(gitoid) 
     }
 }
 

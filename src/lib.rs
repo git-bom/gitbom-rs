@@ -9,7 +9,7 @@ pub enum HashAlgorithm {
 
 #[derive(Debug)]
 pub struct GitOid {
-    hash_algorithm: HashAlgorithm,
+    pub hash_algorithm: HashAlgorithm,
 }
 
 impl GitOid {
